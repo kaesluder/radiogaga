@@ -14,6 +14,7 @@ struct JSStation {
     favicon: String,
     codec: String,
     bitrate: u32,
+    clickcount: u32,
 }
 
 fn station_convert(rb_station: ApiStation) -> JSStation {
@@ -25,6 +26,7 @@ fn station_convert(rb_station: ApiStation) -> JSStation {
         favicon: rb_station.favicon,
         codec: rb_station.codec,
         bitrate: rb_station.bitrate,
+        clickcount: rb_station.clickcount,
     };
     return result;
 }
@@ -37,11 +39,15 @@ fn main() {
 }
 
 #[tauri::command]
-fn stations() -> Vec<JSStation> {
+fn stations(search_string: &str) -> Vec<JSStation> {
     let api = RadioBrowserAPI::new().expect("Unable to initialize RadioBrowserAPI");
+    let limit = String::from("100");
     let stations = api
         .get_stations()
-        .name("jazz")
+        .name(search_string)
+        .order(radiobrowser::StationOrder::Clickcount)
+        .reverse(true)
+        .limit(limit)
         .send()
         .expect("Unable to download stations.");
     let mut jss: Vec<JSStation> = Vec::new();
