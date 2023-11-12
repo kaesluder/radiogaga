@@ -1,6 +1,8 @@
 <script>
+    import 'chota';
 	import Greet from '../lib/Greet.svelte';
+    import Stations from '../lib/Stations.svelte';
 </script>
 
-<h1>Welcome to SvelteKit</h1>
-<Greet />
+<Stations />
+

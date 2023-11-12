@@ -12,8 +12,8 @@
 	}
 </script>
 
-<div>
+<div class="flex flex-wrap">
 	<input id="greet-input" placeholder="Enter a name..." bind:value={name} />
 	<button on:click={greet}>Greet</button>
-	<p>{greetMsg}</p>
+	<p>{greetMsg} <img src="https://tauri.app/meta/tauri_logo_dark.svg"></p>
 </div>
