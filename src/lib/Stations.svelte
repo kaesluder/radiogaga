@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { invoke } from '@tauri-apps/api/tauri';
 	import Fa from 'svelte-fa';
-	import { faRadio } from '@fortawesome/free-solid-svg-icons';
+	import { faRadio, faClose } from '@fortawesome/free-solid-svg-icons';
 
 	type Station = {
 		[key: string]: number | string;
@@ -15,6 +15,12 @@
 	function activatePlayer(station: Station) {
 		showPlayer = true;
 		selectedStation = station;
+	}
+
+	function deactivatePlayer() {
+		console.log('closing player');
+		showPlayer = false;
+		selectedStation = null;
 	}
 
 	async function getStations() {
@@ -43,7 +49,10 @@
 	{#if showPlayer && selectedStation}
 		<div>
 			<h3>{selectedStation['name']} : {selectedStation['codec']} : {selectedStation['bitrate']}</h3>
-			<audio controls src={String(selectedStation['url'])} />
+			<div class="flex">
+				<audio controls src={String(selectedStation['url'])} />
+				<button on:click={deactivatePlayer}><Fa icon={faClose} /> </button>
+			</div>
 		</div>
 	{/if}
 
@@ -63,7 +72,7 @@
 
 				<div>{station['codec']} {station['bitrate']}</div>
 				<div>Clicks: {station['clickcount']}</div>
-				<button on:click={activatePlayer(station)}>Play</button>
+				<button on:click={() => activatePlayer(station)}>Play</button>
 			</div>
 		{/each}
 	</div>

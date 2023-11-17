@@ -2,8 +2,7 @@ import { describe, expect, test, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/svelte';
 import Stations from './Stations.svelte';
 import '@testing-library/jest-dom';
-import { mockIPC, clearMocks } from '@tauri-apps/api/mocks';
-import { setTimeout } from 'timers/promises';
+import { mockIPC } from '@tauri-apps/api/mocks';
 
 type Station = {
 	[key: string]: number | string;
@@ -13,7 +12,7 @@ const testStation: Station = { name: 'foo', codec: 'bar', bitrate: 23 };
 
 describe('Stations', () => {
 	beforeEach(() => {
-		mockIPC((cmd, args) => {
+		mockIPC((cmd) => {
 			if (cmd == 'stations') return [testStation];
 		});
 		//create instance of the component and mount it
