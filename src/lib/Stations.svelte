@@ -2,6 +2,7 @@
 	import { invoke } from '@tauri-apps/api/tauri';
 	import Fa from 'svelte-fa';
 	import { faRadio, faClose } from '@fortawesome/free-solid-svg-icons';
+	import { isPlaylistUrl, fetchPlaylistData, parsePlaylist } from './PlaylistLib';
 
 	type Station = {
 		[key: string]: number | string;
@@ -11,10 +12,26 @@
 	let searchString: string = '';
 	let showPlayer = false;
 	let selectedStation: null | Station = null;
+	let streamUrl: string | undefined = undefined;
 
-	function activatePlayer(station: Station) {
+	async function activatePlayer(station: Station) {
 		showPlayer = true;
 		selectedStation = station;
+		streamUrl = await checkStreamUrl(String(selectedStation['url']));
+		console.log(streamUrl);
+	}
+
+	async function checkStreamUrl(url: string): Promise<string | undefined> {
+		if (isPlaylistUrl(url)) {
+			const playlistBody = await fetchPlaylistData(url);
+			if (playlistBody) {
+				return parsePlaylist(playlistBody);
+			} else {
+				return undefined;
+			}
+		} else {
+			return url;
+		}
 	}
 
 	function deactivatePlayer() {
@@ -50,7 +67,7 @@
 		<div>
 			<h3>{selectedStation['name']} : {selectedStation['codec']} : {selectedStation['bitrate']}</h3>
 			<div class="flex">
-				<audio controls src={String(selectedStation['url'])} />
+				<audio controls src={String(streamUrl)} />
 				<button on:click={deactivatePlayer}><Fa icon={faClose} /> </button>
 			</div>
 		</div>

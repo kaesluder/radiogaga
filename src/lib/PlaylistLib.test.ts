@@ -47,13 +47,13 @@ describe('PlaylistLib', () => {
 		expect(result).toBe('http://example.com/example.mp3');
 	});
 
-	test('playlist parser returns null on bad playlist header', () => {
+	test('playlist parser returns undefined on bad playlist header', () => {
 		const result = parsePlaylist(badPlaylistBody1);
-		expect(result).toBe(null);
+		expect(result).toBeUndefined();
 	});
 
-	test('playlist parser returns null if no file entry is found', () => {
+	test('playlist parser returns undefined if no file entry is found', () => {
 		const result = parsePlaylist(badPlaylistBody2);
-		expect(result).toBe(null);
+		expect(result).toBeUndefined();
 	});
 });

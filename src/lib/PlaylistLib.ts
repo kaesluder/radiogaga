@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { ResponseType, fetch } from '@tauri-apps/api/http';
 
 /**
  * Test if url points to a playlist or directly to a
@@ -18,13 +18,17 @@ export const isPlaylistUrl = function (url: string): boolean {
  * @param url url pointing to a playlist file
  * @returns string contents of playlist or null on failure
  */
-export const fetchPlaylistData = async function (url: string): Promise<string | null> {
+export const fetchPlaylistData = async function (url: string): Promise<string | undefined> {
 	try {
-		const response = await axios.get(url);
-		return response.data;
+		const response = await fetch(url, {
+			method: 'GET',
+			timeout: 30,
+			responseType: ResponseType.Text
+		});
+		return String(response.data);
 	} catch (error) {
 		console.log(error);
-		return null;
+		return undefined;
 	}
 };
 
@@ -35,13 +39,13 @@ export const fetchPlaylistData = async function (url: string): Promise<string | 
  * @param playlist string containing playlist data
  * @returns string url for stream or null
  */
-export const parsePlaylist = function (playlist: string): string | null {
+export const parsePlaylist = function (playlist: string): string | undefined {
 	const lines = playlist.split(/[\r\n]+/);
 
 	// check that return result is a playlist
-	if (!lines[0].match(/playlist/)) return null;
+	if (!lines[0].match(/playlist/)) return undefined;
 	for (const line of lines) {
 		if (line.match(/^File/)) return line.split('=')[1];
 	}
-	return null;
+	return undefined;
 };
