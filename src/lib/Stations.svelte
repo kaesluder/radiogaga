@@ -73,10 +73,10 @@
 		</div>
 	{/if}
 
-	<div class="flex flex-wrap">
+	<div class="flex flex-wrap justify-center items-center">
 		{#each stations as station}
 			<div
-				class="hover:outline m-2 bg-stone-700 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/6 mb-4 p-4"
+				class="rounded-md hover:outline m-2 bg-stone-700 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/6 mb-4 p-4"
 			>
 				<h3 class="text-3xl">{station['name']}</h3>
 				<div class="h-80">
