@@ -6,10 +6,12 @@ A simple streaming radio player built with love using [Tauri](https://tauri.app)
 
 - [x] Player is semi-functional able to play direct links to MP3 and AAC streams.
 - [x] Search by name working.
-- [ ] Links to playlist (`.pls`) currently not working.
+- [x] Links to playlist (`.pls`) working.
 - [ ] Implement tag search.
 - [ ] Implement favorites system
 - [ ] Implement preferences
 - [ ] AppImage builds are broken
 - [ ] Testing testing testing
 - [ ] Build instructions
+- [ ] Rust side testing
+- [ ] Github CI
