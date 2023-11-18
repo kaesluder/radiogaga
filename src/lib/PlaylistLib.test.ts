@@ -1,5 +1,5 @@
 import { describe, expect, test, vi, beforeEach, afterEach } from 'vitest';
-import axios from 'axios';
+import { Response, fetch } from '@tauri-apps/api/http';
 import { isPlaylistUrl, fetchPlaylistData, parsePlaylist } from './PlaylistLib';
 
 const playlistURL: string = 'http://www.example.com/playlist.pls';
@@ -16,7 +16,7 @@ File1=http://example.com/example.mp3`;
 const badPlaylistBody2 = `[playlist]
 Title1=Total Eclipse of The Heart`;
 
-vi.mock('axios');
+vi.mock('@tauri-apps/api/http');
 
 describe('PlaylistLib', () => {
 	test('url ending with mp3 returns false', () => {
@@ -36,7 +36,8 @@ describe('PlaylistLib', () => {
 	});
 
 	test('api call against mocked axios returns correct value', async () => {
-		vi.mocked(axios.get).mockResolvedValue({ data: playlistBody });
+		// @ts-expect-error "linter doesn't understand rust mocks. code passes tests"
+		vi.mocked(fetch).mockResolvedValue({ data: playlistBody });
 
 		const result = await fetchPlaylistData('https://somafm.com/synphaera256.pls');
 		expect(result).toBe(playlistBody);
