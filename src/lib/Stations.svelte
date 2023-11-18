@@ -22,6 +22,7 @@
 	}
 
 	async function checkStreamUrl(url: string): Promise<string | undefined> {
+		// TODO Refactor
 		if (isPlaylistUrl(url)) {
 			const playlistBody = await fetchPlaylistData(url);
 			if (playlistBody) {
@@ -49,7 +50,7 @@
 
 <div>
 	<h2>Radio Stations</h2>
-	<div class="flex flex-wrap">
+	<div class="flex flex-wrap m-3">
 		<div class="flex-auto">
 			<input
 				class="bg-stone-800"
@@ -64,10 +65,10 @@
 	</div>
 
 	{#if showPlayer && selectedStation}
-		<div>
+		<div class="bg-stone-800 fixed bottom-0 p-4 rounded">
 			<h3>{selectedStation['name']} : {selectedStation['codec']} : {selectedStation['bitrate']}</h3>
 			<div class="flex">
-				<audio controls src={String(streamUrl)} />
+				<audio controls autoplay src={String(streamUrl)} />
 				<button on:click={deactivatePlayer}><Fa icon={faClose} /> </button>
 			</div>
 		</div>
@@ -89,7 +90,12 @@
 
 				<div>{station['codec']} {station['bitrate']}</div>
 				<div>Clicks: {station['clickcount']}</div>
-				<button on:click={() => activatePlayer(station)}>Play</button>
+				<button
+					on:click={() => {
+						deactivatePlayer();
+						activatePlayer(station);
+					}}>Play</button
+				>
 			</div>
 		{/each}
 	</div>
