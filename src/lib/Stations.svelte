@@ -21,6 +21,23 @@
 		console.log(streamUrl);
 	}
 
+	function handleKeyPress(event: KeyboardEvent) {
+		// Check if the Enter key is pressed (key code 13)
+		if (event.key === 'Enter') {
+			getStations();
+		}
+	}
+	/**
+	 * Validates and normalizes a stream URL.
+	 *
+	 * This function checks if the provided URL is a valid stream URL or a playlist URL.
+	 * If it's a playlist URL, it will try to fetch and parse the playlist data to
+	 * extract the actual stream URL. Otherwise, the original URL is returned.
+	 *
+	 * @param {string} url - The URL to be validated and normalized.
+	 * @return {Promise<string | undefined>} A promise that resolves to a valid stream
+	 *     URL or undefined if the input URL is not a valid stream URL.
+	 */
 	async function checkStreamUrl(url: string): Promise<string | undefined> {
 		// TODO Refactor
 		if (isPlaylistUrl(url)) {
@@ -57,6 +74,7 @@
 				id="greet-input"
 				placeholder="Enter a search string"
 				bind:value={searchString}
+				on:keydown={handleKeyPress}
 			/>
 		</div>
 		<div class="flex-initial">
