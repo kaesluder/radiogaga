@@ -14,6 +14,14 @@
 	let selectedStation: null | Station = null;
 	let streamUrl: string | undefined = undefined;
 
+	/**
+	 * Activates the player by setting the `showPlayer` flag to true, assigning the
+	 * selected station to the `selectedStation` variable, and fetching the stream URL
+	 * for the selected station using the `checkStreamUrl` function.
+	 *
+	 * @param {Station} station - The selected station object.
+	 * @returns {Promise<void>} - A promise that resolves when the stream URL is fetched and logged to the console.
+	 */
 	async function activatePlayer(station: Station) {
 		showPlayer = true;
 		selectedStation = station;
@@ -21,6 +29,12 @@
 		console.log(streamUrl);
 	}
 
+	/**
+	 * Function to handle key press events.
+	 *
+	 * @param {KeyboardEvent} event - The event object representing the key press event.
+	 * @returns {void} - This function does not return any value.
+	 */
 	function handleKeyPress(event: KeyboardEvent) {
 		// Check if the Enter key is pressed (key code 13)
 		if (event.key === 'Enter') {
@@ -52,12 +66,24 @@
 		}
 	}
 
+	/**
+	 * Function to deactivate the player.
+	 *
+	 * This function is responsible for deactivating the player by setting the `showPlayer` flag to false,
+	 * and resetting the `selectedStation` variable to null.
+	 *
+	 * @returns {void}
+	 */
 	function deactivatePlayer() {
 		console.log('closing player');
 		showPlayer = false;
 		selectedStation = null;
 	}
-
+	/**
+	 * Asynchronous function that retrieves a list of stations.
+	 *
+	 * @returns {Promise<void>} A promise that resolves when the stations are retrieved.
+	 */
 	async function getStations() {
 		stations = await invoke('stations', { searchString });
 	}
