@@ -16,6 +16,7 @@ struct JSStation {
     codec: String,
     bitrate: u32,
     clickcount: u32,
+    votes: i32,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -41,6 +42,7 @@ fn station_convert(rb_station: ApiStation) -> JSStation {
         codec: rb_station.codec,
         bitrate: rb_station.bitrate,
         clickcount: rb_station.clickcount,
+        votes: rb_station.votes,
     }
 }
 
@@ -73,7 +75,7 @@ fn stations(search_string: &str) -> Vec<JSStation> {
     let stations = api
         .get_stations()
         .name(search_string)
-        .order(radiobrowser::StationOrder::Clickcount)
+        .order(radiobrowser::StationOrder::Votes)
         .reverse(true)
         .limit(limit)
         .send()

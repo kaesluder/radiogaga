@@ -29,6 +29,13 @@
 		console.log(streamUrl);
 	}
 
+	function formatVoteNum(num: number | string): string {
+		if (typeof num !== 'number') return '0';
+		if (num > 1000) return `${Math.floor(num / 1000)}K`;
+		if (num > 1000000) return `${Math.floor(num / 1000000)}M`;
+		return num.toString();
+	}
+
 	/**
 	 * Function to handle key press events.
 	 *
@@ -121,25 +128,29 @@
 	<div class="flex flex-wrap justify-center items-center">
 		{#each stations as station}
 			<div
-				class="rounded-md hover:outline m-2 bg-stone-700 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/6 mb-4 p-4"
+				class="rounded-md hover:outline p-2 m-2 bg-stone-700 w-[200px] h-[350px] flex flex-col justify-between"
 			>
 				<h3 class="text-3xl">{station['name']}</h3>
-				<div class="h-80">
+				<div>
 					{#if station['favicon']}
-						<img class="h-full object-contain" src={String(station['favicon'])} alt="Icon" />
+						<img class="w-full object-contain" src={String(station['favicon'])} alt="Icon" />
 					{:else}
 						<Fa size="7x" icon={faRadio} />
 					{/if}
 				</div>
 
-				<div>{station['codec']} {station['bitrate']}</div>
-				<div>Clicks: {station['clickcount']}</div>
+				<div class="mt-auto">{station['codec']} {station['bitrate']}</div>
+				<div>
+					Votes: {formatVoteNum(station['votes'])}
+				</div>
 				<button
 					on:click={() => {
 						deactivatePlayer();
 						activatePlayer(station);
-					}}>Play</button
+					}}
 				>
+					Play
+				</button>
 			</div>
 		{/each}
 	</div>
