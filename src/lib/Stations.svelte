@@ -116,7 +116,7 @@
 	</div>
 
 	{#if showPlayer && selectedStation}
-		<div class="bg-stone-800 fixed bottom-0 p-4 rounded">
+		<div class="bg-stone-800 fixed bottom-0 p-4 rounded z-20">
 			<h3>{selectedStation['name']} : {selectedStation['codec']} : {selectedStation['bitrate']}</h3>
 			<div class="flex">
 				<audio controls autoplay src={String(streamUrl)} />
