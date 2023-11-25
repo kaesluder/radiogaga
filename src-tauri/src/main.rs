@@ -68,21 +68,72 @@ fn main() {
 ///
 /// ## Returns
 /// A vector of `JSStation` objects representing the stations that match the search query.
-#[tauri::command]
-fn stations(search_string: &str) -> Vec<JSStation> {
+fn fetch_stations(search_string: &str) -> Vec<ApiStation> {
     let api = RadioBrowserAPI::new().expect("Unable to initialize RadioBrowserAPI");
     let limit = String::from("100");
-    let stations = api
-        .get_stations()
+    api.get_stations()
         .name(search_string)
         .order(radiobrowser::StationOrder::Votes)
         .reverse(true)
         .limit(limit)
         .send()
-        .expect("Unable to download stations.");
+        .expect("Unable to download stations.")
+}
+
+/// # stations
+///
+/// Takes a search string as input and returns a vector of `JSStation` objects
+/// where JSStation.name matches the search string.
+///
+/// This treats the search string as a bag of lowercase keywords. Search string "foo bar baz" will
+/// match station "Baz Bar fOO."
+///
+/// ## Example Usage
+///
+/// ```rust
+/// let search_string = "rock music";
+/// let result = stations(search_string);
+/// ```
+///
+/// ## Arguments
+///
+/// - `search_string` (string): The search string used to filter the stations.
+///
+/// ## Returns
+///
+/// A vector of `JSStation` objects: The filtered and converted stations based on the search string.
+///
+/// ## Note
+///
+/// First keyword is sent to the server. Then the list of stations is filtered for remaining keyword matches.
+/// An empty search string fetches the stations with the top 100 votes.
+///   
+#[tauri::command]
+fn stations(search_string: &str) -> Vec<JSStation> {
+    let downcase_search_string = search_string.to_lowercase();
+    let parts: Vec<&str> = downcase_search_string.split_whitespace().collect();
+    let stations: Vec<ApiStation> = if parts.is_empty() {
+        fetch_stations(search_string)
+    } else {
+        fetch_stations(parts[0])
+    };
+
     let mut jss: Vec<JSStation> = Vec::new();
     for rb in stations.iter() {
-        jss.push(station_convert(rb.clone()));
+        let mut should_include = true;
+        let downcase_name = rb.name.to_lowercase();
+        if parts.len() > 1 {
+            for keyword in &parts[1..] {
+                //let downcase_keyword = keyword.to_lowercase();
+                if !downcase_name.contains(*keyword) {
+                    should_include = false;
+                    break;
+                }
+            }
+        }
+        if should_include {
+            jss.push(station_convert(rb.clone()));
+        }
     }
 
     jss
