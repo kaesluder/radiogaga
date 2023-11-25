@@ -3,6 +3,7 @@
 
 use radiobrowser::blocking::RadioBrowserAPI;
 use radiobrowser::ApiStation;
+use radiobrowser::ApiTag;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
@@ -17,8 +18,21 @@ struct JSStation {
     clickcount: u32,
 }
 
+#[derive(Serialize, Deserialize)]
+struct JSTag {
+    name: String,
+    stationcount: u32,
+}
+
+fn tag_convert(rb_tag: &ApiTag) -> JSTag {
+    JSTag {
+        name: rb_tag.name.clone(),
+        stationcount: rb_tag.stationcount,
+    }
+}
+
 fn station_convert(rb_station: ApiStation) -> JSStation {
-    let result = JSStation {
+    JSStation {
         name: rb_station.name,
         stationuuid: rb_station.stationuuid,
         url: rb_station.url,
@@ -27,17 +41,31 @@ fn station_convert(rb_station: ApiStation) -> JSStation {
         codec: rb_station.codec,
         bitrate: rb_station.bitrate,
         clickcount: rb_station.clickcount,
-    };
-    return result;
+    }
 }
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet, stations])
+        .invoke_handler(tauri::generate_handler![greet, stations, tags])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
 
+/// # stations
+///
+/// A function that takes a search string as input and returns a vector of `JSStation` objects.
+///
+/// ## Example Usage
+/// ```rust
+/// let search_string = "rock";
+/// let result = stations(search_string);
+/// ```
+///
+/// ## Arguments
+/// - `search_string`: A string representing the search query for stations.
+///
+/// ## Returns
+/// A vector of `JSStation` objects representing the stations that match the search query.
 #[tauri::command]
 fn stations(search_string: &str) -> Vec<JSStation> {
     let api = RadioBrowserAPI::new().expect("Unable to initialize RadioBrowserAPI");
@@ -55,7 +83,25 @@ fn stations(search_string: &str) -> Vec<JSStation> {
         jss.push(station_convert(rb.clone()));
     }
 
-    return jss;
+    jss
+}
+
+#[tauri::command]
+fn tags() -> Vec<JSTag> {
+    let api = RadioBrowserAPI::new().expect("Unable to initialize RadioBrowserAPI");
+    let result = api.get_tags().send();
+
+    match result {
+        Ok(rb_tags) => {
+            let mut jst: Vec<JSTag> = Vec::new();
+            for rb in rb_tags.iter() {
+                jst.push(tag_convert(rb));
+            }
+            jst
+        }
+
+        Err(_error) => Vec::new(),
+    }
 }
 
 #[tauri::command]
