@@ -53,79 +53,50 @@ fn main() {
         .expect("error while running tauri application");
 }
 
-/// # stations
-///
-/// A function that takes a search string as input and returns a vector of `JSStation` objects.
-///
-/// ## Example Usage
-/// ```rust
-/// let search_string = "rock";
-/// let result = stations(search_string);
-/// ```
-///
-/// ## Arguments
-/// - `search_string`: A string representing the search query for stations.
-///
-/// ## Returns
-/// A vector of `JSStation` objects representing the stations that match the search query.
 fn fetch_stations(search_string: &str) -> Vec<ApiStation> {
     let api = RadioBrowserAPI::new().expect("Unable to initialize RadioBrowserAPI");
     let limit = String::from("100");
-    api.get_stations()
+    let results = api
+        .get_stations()
         .name(search_string)
         .order(radiobrowser::StationOrder::Votes)
         .reverse(true)
         .limit(limit)
-        .send()
-        .expect("Unable to download stations.")
+        .send();
+    match results {
+        Ok(rb_stations) => rb_stations,
+        Err(_error) => Vec::<ApiStation>::new(),
+    }
 }
 
-/// # stations
+/// This function takes in a vector of `ApiStation` objects and a vector of strings called `parts` as input.
+/// It iterates over each `ApiStation` object and checks if its name contains all the keywords specified in `parts`.
+/// If it does, it converts the `ApiStation` object to a `JSStation` object using the `station_convert` function and adds it to a new vector called `jss`.
+/// Finally, it returns the `jss` vector.
 ///
-/// Takes a search string as input and returns a vector of `JSStation` objects
-/// where JSStation.name matches the search string.
+/// # Arguments
 ///
-/// This treats the search string as a bag of lowercase keywords. Search string "foo bar baz" will
-/// match station "Baz Bar fOO."
+/// * `rb_stations` - A vector of `ApiStation` objects representing radio stations.
+/// * `parts` - A vector of strings representing keywords to search for in the station names.
 ///
-/// ## Example Usage
+/// # Example
 ///
-/// ```rust
-/// let search_string = "rock music";
-/// let result = stations(search_string);
+/// ```
+/// let rb_stations = Vec::<ApiStations>::new();
+/// let parts = vec!["search", "station"];
+/// let result = stations_post(rb_stations, parts);
+/// println!("{:?}", result);
 /// ```
 ///
-/// ## Arguments
-///
-/// - `search_string` (string): The search string used to filter the stations.
-///
-/// ## Returns
-///
-/// A vector of `JSStation` objects: The filtered and converted stations based on the search string.
-///
-/// ## Note
-///
-/// First keyword is sent to the server. Then the list of stations is filtered for remaining keyword matches.
-/// An empty search string fetches the stations with the top 100 votes.
-///   
-#[tauri::command]
-fn stations(search_string: &str) -> Vec<JSStation> {
-    let downcase_search_string = search_string.to_lowercase();
-    let parts: Vec<&str> = downcase_search_string.split_whitespace().collect();
-    let stations: Vec<ApiStation> = if parts.is_empty() {
-        fetch_stations(search_string)
-    } else {
-        fetch_stations(parts[0])
-    };
-
+fn stations_post(rb_stations: Vec<ApiStation>, parts: Vec<&str>) -> Vec<JSStation> {
     let mut jss: Vec<JSStation> = Vec::new();
-    for rb in stations.iter() {
+    for rb in rb_stations.iter() {
         let mut should_include = true;
         let downcase_name = rb.name.to_lowercase();
         if parts.len() > 1 {
             for keyword in &parts[1..] {
                 //let downcase_keyword = keyword.to_lowercase();
-                if !downcase_name.contains(*keyword) {
+                if !downcase_name.contains(keyword) {
                     should_include = false;
                     break;
                 }
@@ -137,6 +108,18 @@ fn stations(search_string: &str) -> Vec<JSStation> {
     }
 
     jss
+}
+#[tauri::command]
+fn stations(search_string: &str) -> Vec<JSStation> {
+    let downcase_search_string = search_string.to_lowercase();
+    let parts: Vec<&str> = downcase_search_string.split_whitespace().collect();
+    let stations: Vec<ApiStation> = if parts.is_empty() {
+        fetch_stations(search_string)
+    } else {
+        fetch_stations(parts[0])
+    };
+
+    stations_post(stations, parts)
 }
 
 #[tauri::command]
@@ -160,4 +143,87 @@ fn tags() -> Vec<JSTag> {
 #[tauri::command]
 fn greet(name: &str) -> String {
     format!("Hello, {}!", name)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // Should return a vector of JSStation objects containing all ApiStation objects when given an empty vector of strings as input.
+    #[test]
+    fn stations_post_jsstation_results_match_apistation_inputs() {
+        let rb_stations = vec![
+            ApiStation {
+                name: "station1".to_string(),
+                stationuuid: "uuid1".to_string(),
+                url: "url1".to_string(),
+                homepage: "homepage1".to_string(),
+                favicon: "favicon1".to_string(),
+                codec: "codec1".to_string(),
+                bitrate: 128,
+                clickcount: 10,
+                votes: 5,
+                changeuuid: "".to_string(),
+                serveruuid: None,
+                url_resolved: "".to_string(),
+                tags: "".to_string(),
+                country: "".to_string(),
+                countrycode: "".to_string(),
+                iso_3166_2: None,
+                state: "".to_string(),
+                language: "".to_string(),
+                languagecodes: None,
+                lastchangetime_iso8601: None,
+                hls: 0,
+                lastcheckok: 0,
+                lastchecktime_iso8601: None,
+                lastcheckoktime_iso8601: None,
+                lastlocalchecktime_iso8601: None,
+                clicktimestamp_iso8601: None,
+                clicktrend: 0,
+                ssl_error: None,
+                geo_lat: None,
+                geo_long: None,
+                has_extended_info: None,
+            },
+            ApiStation {
+                name: "station2".to_string(),
+                stationuuid: "uuid2".to_string(),
+                url: "url2".to_string(),
+                homepage: "homepage2".to_string(),
+                favicon: "favicon2".to_string(),
+                codec: "codec2".to_string(),
+                bitrate: 128,
+                clickcount: 10,
+                votes: 5,
+                changeuuid: "".to_string(),
+                serveruuid: None,
+                url_resolved: "".to_string(),
+                tags: "".to_string(),
+                country: "".to_string(),
+                countrycode: "".to_string(),
+                iso_3166_2: None,
+                state: "".to_string(),
+                language: "".to_string(),
+                languagecodes: None,
+                lastchangetime_iso8601: None,
+                hls: 0,
+                lastcheckok: 0,
+                lastchecktime_iso8601: None,
+                lastcheckoktime_iso8601: None,
+                lastlocalchecktime_iso8601: None,
+                clicktimestamp_iso8601: None,
+                clicktrend: 0,
+                ssl_error: None,
+                geo_lat: None,
+                geo_long: None,
+                has_extended_info: None,
+            },
+        ];
+        let parts = Vec::<&str>::new();
+        let result = stations_post(rb_stations, parts);
+        assert_eq!(result.len(), 2);
+        assert_eq!(result[0].name, "station1");
+        assert_eq!(result[1].name, "station2");
+    }
 }

@@ -100,6 +100,8 @@
 
 <div>
 	<h2>Radio Stations</h2>
+
+	<!-- Search controls div -->
 	<div class="flex flex-wrap m-3">
 		<div class="flex-auto">
 			<input
@@ -115,6 +117,7 @@
 		</div>
 	</div>
 
+	<!-- Audio player -->
 	{#if showPlayer && selectedStation}
 		<div class="bg-stone-800 fixed bottom-0 p-4 rounded z-20">
 			<h3>{selectedStation['name']} : {selectedStation['codec']} : {selectedStation['bitrate']}</h3>
@@ -125,6 +128,7 @@
 		</div>
 	{/if}
 
+	<!-- Station grid list. -->
 	<div class="flex flex-wrap justify-center items-center">
 		{#each stations as station}
 			<div
