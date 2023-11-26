@@ -149,13 +149,11 @@ fn greet(name: &str) -> String {
 mod tests {
     use super::*;
 
-    // Should return a vector of JSStation objects containing all ApiStation objects when given an empty vector of strings as input.
-    #[test]
-    fn stations_post_jsstation_results_match_apistation_inputs() {
-        let rb_stations = vec![
+    fn test_api_stations() -> Vec<ApiStation> {
+        vec![
             ApiStation {
-                name: "station1".to_string(),
-                stationuuid: "uuid1".to_string(),
+                name: String::from("station1"),
+                stationuuid: String::from("uuid1"),
                 url: "url1".to_string(),
                 homepage: "homepage1".to_string(),
                 favicon: "favicon1".to_string(),
@@ -219,11 +217,34 @@ mod tests {
                 geo_long: None,
                 has_extended_info: None,
             },
-        ];
+        ]
+    }
+
+    // Should return a vector of JSStation objects containing all ApiStation objects when given an empty vector of strings as input.
+    #[test]
+    fn stations_post_jsstation_results_match_apistation_inputs() {
+        let rb_stations = test_api_stations();
         let parts = Vec::<&str>::new();
         let result = stations_post(rb_stations, parts);
         assert_eq!(result.len(), 2);
         assert_eq!(result[0].name, "station1");
         assert_eq!(result[1].name, "station2");
+    }
+
+    #[test]
+    fn stations_post_returns_only_string_match() {
+        let rb_stations = test_api_stations();
+        let parts = vec!["", "sta", "ion2"];
+        let result = stations_post(rb_stations, parts);
+        assert_eq!(result.len(), 1);
+        assert_eq!(result[0].name, "station2");
+    }
+
+    #[test]
+    fn stations_post_returns_empty_vec() {
+        let rb_stations = test_api_stations();
+        let parts = vec!["", "gabblesnack"];
+        let result = stations_post(rb_stations, parts);
+        assert_eq!(result.len(), 0);
     }
 }
