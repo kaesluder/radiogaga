@@ -24,11 +24,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # node
-      - name: install npm
-        uses: npm/action-setup@v2
-        with:
-          version: 8.x.x
+      # # node
+      # - name: install npm
+      #   uses: npm/action-setup@v2
+      #   with:
+      #     version: 8.x.x
 
       - name: setup node
         uses: actions/setup-node@v4
