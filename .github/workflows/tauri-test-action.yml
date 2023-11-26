@@ -25,8 +25,8 @@ jobs:
       - uses: actions/checkout@v4
 
       # node
-      - name: install pnpm
-        uses: pnpm/action-setup@v2
+      - name: install npm
+        uses: npm/action-setup@v2
         with:
           version: 8.x.x
 
@@ -34,11 +34,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: pnpm
+          cache: npm
 
       # example-with-tauri tests the auto installation of the tauri cli
       - name: install example dependencies
-        run: pnpm install
+        run: npm install
         working-directory: ./__fixtures__/example
 
       # rust
