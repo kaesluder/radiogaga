@@ -40,12 +40,12 @@ jobs:
         with:
           targets: aarch64-apple-darwin
 
-      - uses: Swatinem/rust-cache@v2
-        with:
-          cache-on-failure: true
-          workspaces: |
-            ./__fixtures__/example/src-tauri -> ../../target
-            ./__fixtures__/example-with-tauri/src-tauri -> ../../target
+      # - uses: Swatinem/rust-cache@v2
+      #   with:
+      #     cache-on-failure: true
+      #     workspaces: |
+      #       ./__fixtures__/example/src-tauri -> ../../target
+      #       ./__fixtures__/example-with-tauri/src-tauri -> ../../target
 
       # system
       - name: install dependencies (ubuntu only)
@@ -61,7 +61,7 @@ jobs:
           # Updater signature is exposed here to make sure it works in PR's
           TAURI_PRIVATE_KEY: dW50cnVzdGVkIGNvbW1lbnQ6IHJzaWduIGVuY3J5cHRlZCBzZWNyZXQga2V5ClJXUlRZMEl5YTBGV3JiTy9lRDZVd3NkL0RoQ1htZmExNDd3RmJaNmRMT1ZGVjczWTBKZ0FBQkFBQUFBQUFBQUFBQUlBQUFBQWdMekUzVkE4K0tWQ1hjeGt1Vkx2QnRUR3pzQjVuV0ZpM2czWXNkRm9hVUxrVnB6TUN3K1NheHJMREhQbUVWVFZRK3NIL1VsMDBHNW5ET1EzQno0UStSb21nRW4vZlpTaXIwZFh5ZmRlL1lSN0dKcHdyOUVPclVvdzFhVkxDVnZrbHM2T1o4Tk1NWEU9Cg==
         with:
-          projectPath: ./__fixtures__/example-with-tauri
+          # projectPath: ./__fixtures__/example-with-tauri
           includeDebug: true
           includeRelease: false
           tagName: example-with-tauri-v__VERSION__
@@ -77,7 +77,7 @@ jobs:
           # Updater signature is exposed here to make sure it works in PR's
           TAURI_PRIVATE_KEY: dW50cnVzdGVkIGNvbW1lbnQ6IHJzaWduIGVuY3J5cHRlZCBzZWNyZXQga2V5ClJXUlRZMEl5YTBGV3JiTy9lRDZVd3NkL0RoQ1htZmExNDd3RmJaNmRMT1ZGVjczWTBKZ0FBQkFBQUFBQUFBQUFBQUlBQUFBQWdMekUzVkE4K0tWQ1hjeGt1Vkx2QnRUR3pzQjVuV0ZpM2czWXNkRm9hVUxrVnB6TUN3K1NheHJMREhQbUVWVFZRK3NIL1VsMDBHNW5ET1EzQno0UStSb21nRW4vZlpTaXIwZFh5ZmRlL1lSN0dKcHdyOUVPclVvdzFhVkxDVnZrbHM2T1o4Tk1NWEU9Cg==
         with:
-          projectPath: ./__fixtures__/example
+          # projectPath: ./__fixtures__/example
           distPath: ../dist # relative to tauri.conf.json
           iconPath: ./icon.png # relative to projectPath
           bundleIdentifier: com.tauri.actiontest
