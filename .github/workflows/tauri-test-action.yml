@@ -40,3 +40,4 @@ jobs:
         id: tauri_build
 
     # You can now use the JSON array of artifacts under `steps.tauri_build.outputs.artifacts` to post-process/upload your bundles
+    #ping
