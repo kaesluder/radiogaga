@@ -6,18 +6,6 @@ use radiobrowser::ApiStation;
 use radiobrowser::ApiTag;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
-struct JSStation {
-    name: String,
-    stationuuid: String,
-    url: String,
-    homepage: String,
-    favicon: String,
-    codec: String,
-    bitrate: u32,
-    clickcount: u32,
-    votes: i32,
-}
 
 #[derive(Serialize, Deserialize)]
 struct JSTag {
@@ -32,19 +20,6 @@ fn tag_convert(rb_tag: &ApiTag) -> JSTag {
     }
 }
 
-fn station_convert(rb_station: ApiStation) -> JSStation {
-    JSStation {
-        name: rb_station.name,
-        stationuuid: rb_station.stationuuid,
-        url: rb_station.url,
-        homepage: rb_station.homepage,
-        favicon: rb_station.favicon,
-        codec: rb_station.codec,
-        bitrate: rb_station.bitrate,
-        clickcount: rb_station.clickcount,
-        votes: rb_station.votes,
-    }
-}
 
 fn main() {
     tauri::Builder::default()
@@ -69,15 +44,20 @@ fn fetch_stations(search_string: &str) -> Vec<ApiStation> {
     }
 }
 
-/// This function takes in a vector of `ApiStation` objects and a vector of strings called `parts` as input.
-/// It iterates over each `ApiStation` object and checks if its name contains all the keywords specified in `parts`.
-/// If it does, it converts the `ApiStation` object to a `JSStation` object using the `station_convert` function and adds it to a new vector called `jss`.
-/// Finally, it returns the `jss` vector.
+/// This function takes in a vector of `ApiStation` objects and a
+/// vector of strings called `parts` as input.  It iterates over each
+/// `ApiStation` object and checks if its name contains all the
+/// keywords specified in `parts`.  If it does, it converts the
+/// `ApiStation` object to a `JSStation` object using the
+/// `station_convert` function and adds it to a new vector called
+/// `jss`.  Finally, it returns the `jss` vector.
 ///
 /// # Arguments
 ///
-/// * `rb_stations` - A vector of `ApiStation` objects representing radio stations.
-/// * `parts` - A vector of strings representing keywords to search for in the station names.
+/// * `rb_stations` - A vector of `ApiStation` objects representing
+///   radio stations.
+/// * `parts` - A vector of strings representing
+///   keywords to search for in the station names.
 ///
 /// # Example
 ///
@@ -88,8 +68,8 @@ fn fetch_stations(search_string: &str) -> Vec<ApiStation> {
 /// println!("{:?}", result);
 /// ```
 ///
-fn stations_post(rb_stations: Vec<ApiStation>, parts: Vec<&str>) -> Vec<JSStation> {
-    let mut jss: Vec<JSStation> = Vec::new();
+fn stations_post(rb_stations: Vec<ApiStation>, parts: Vec<&str>) -> Vec<ApiStation> {
+    let mut jss: Vec<ApiStation> = Vec::new();
     for rb in rb_stations.iter() {
         let mut should_include = true;
         let downcase_name = rb.name.to_lowercase();
@@ -103,14 +83,15 @@ fn stations_post(rb_stations: Vec<ApiStation>, parts: Vec<&str>) -> Vec<JSStatio
             }
         }
         if should_include {
-            jss.push(station_convert(rb.clone()));
+            jss.push(rb.clone());
         }
     }
 
     jss
 }
+
 #[tauri::command]
-fn stations(search_string: &str) -> Vec<JSStation> {
+fn stations(search_string: &str) -> Vec<ApiStation> {
     let downcase_search_string = search_string.to_lowercase();
     let parts: Vec<&str> = downcase_search_string.split_whitespace().collect();
     let stations: Vec<ApiStation> = if parts.is_empty() {
@@ -149,6 +130,9 @@ fn greet(name: &str) -> String {
 mod tests {
     use super::*;
 
+    /// Returns a vector of `ApiStation` structs for testing purposes.
+    ///
+    /// The vector contains two stations with hardcoded values for their respective fields.
     fn test_api_stations() -> Vec<ApiStation> {
         vec![
             ApiStation {
