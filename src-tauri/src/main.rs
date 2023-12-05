@@ -4,23 +4,6 @@
 use radiobrowser::blocking::RadioBrowserAPI;
 use radiobrowser::ApiStation;
 use radiobrowser::ApiTag;
-use serde::{Deserialize, Serialize};
-
-
-#[derive(Serialize, Deserialize)]
-struct JSTag {
-    name: String,
-    stationcount: u32,
-}
-
-fn tag_convert(rb_tag: &ApiTag) -> JSTag {
-    JSTag {
-        name: rb_tag.name.clone(),
-        stationcount: rb_tag.stationcount,
-    }
-}
-
-
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![greet, stations, tags])
@@ -104,19 +87,12 @@ fn stations(search_string: &str) -> Vec<ApiStation> {
 }
 
 #[tauri::command]
-fn tags() -> Vec<JSTag> {
+fn tags() -> Vec<ApiTag> {
     let api = RadioBrowserAPI::new().expect("Unable to initialize RadioBrowserAPI");
     let result = api.get_tags().send();
 
     match result {
-        Ok(rb_tags) => {
-            let mut jst: Vec<JSTag> = Vec::new();
-            for rb in rb_tags.iter() {
-                jst.push(tag_convert(rb));
-            }
-            jst
-        }
-
+        Ok(rb_tags) => rb_tags,
         Err(_error) => Vec::new(),
     }
 }
